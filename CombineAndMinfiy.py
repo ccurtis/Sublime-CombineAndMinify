@@ -12,8 +12,8 @@ class BuildCommand(sp.TextCommand):
             # SHELL
             #import subprocess
             # POST
-            import urllib
-            import urllib2
+            import urllib.request, urllib.parse, urllib.error
+            import urllib.request, urllib.error, urllib.parse
             # TIME
             import time
 
@@ -24,7 +24,7 @@ class BuildCommand(sp.TextCommand):
             #subprocess.Popen('cmd')
 
             # Start script
-            print '\nInitiating Minification'
+            print('\nInitiating Minification')
             start = time.time()
 
             # Read in order file
@@ -53,7 +53,7 @@ class BuildCommand(sp.TextCommand):
 
                 # Check for old master then remove
                 if os.path.isfile(jsMaster):
-                    print 'Trashing Old Master File'
+                    print('Trashing Old Master File')
                     os.remove(jsMaster)
 
                 # Create new master file
@@ -67,18 +67,18 @@ class BuildCommand(sp.TextCommand):
                 master = open(jsMaster, 'r')
 
                 # Set up POST
-                print 'Sending JavaScript for Minification'
+                print('Sending JavaScript for Minification')
                 url = 'http://marijnhaverbeke.nl/uglifyjs'
                 user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
                 values = {'js_code': master.read()}
                 headers = {'User-Agent': user_agent}
-                data = urllib.urlencode(values)
-                req = urllib2.Request(url, data, headers)
-                response = urllib2.urlopen(req)
+                data = urllib.parse.urlencode(values)
+                req = urllib.request.Request(url, data.encode('utf-8'), headers)
+                response = urllib.request.urlopen(req)
 
                 # Add minified output to minify file
-                print 'Saving Minified Version'
-                minify = open(jsMinify, 'w')
+                print('Saving Minified Version')
+                minify = open(jsMinify, 'wb')
                 minify.write(response.read())
 
                 # Clean up
@@ -89,19 +89,19 @@ class BuildCommand(sp.TextCommand):
                 # Calculate and display run time
                 end = time.time()
                 time = round(end - start, 2)
-                print '\nOperation Compleated in ' + str(time) + ' seconds.\n'
+                print('\nOperation Compleated in ' + str(time) + ' seconds.\n')
                 s.status_message('CombineAndMinify: Operation Compleated in ' + str(time) + ' seconds. Check ' + outPath + ' for new files.')
             else:
-                print 'CombineAndMinify Build Failed: FileList Does Not Exist'
+                print('CombineAndMinify Build Failed: FileList Does Not Exist')
                 s.status_message('CombineAndMinify Build Failed: FileList Does Not Exist')
 
         ########################## Begin ##########################
-        print ''
+        print('')
         settings = s.load_settings('CombineAndMinfiy.sublime-settings')
         #print 'CombineAndMinfiy Version: ' + settings.get('Version')
-        print 'Build Initiated'
+        print('Build Initiated')
         s.status_message('CombineAndMinify Build Initiated')
-        print ''
+        print('')
 
         # Load settings from project
         fileList = s.active_window().active_view().settings().get('Combine: FileList')
@@ -112,26 +112,26 @@ class BuildCommand(sp.TextCommand):
 
         # Check to see that user set up required project settings
         if fileList is None:
-            print 'CombineAndMinify: "Combine: FileList" Project Path Setting not Set'
+            print('CombineAndMinify: "Combine: FileList" Project Path Setting not Set')
             s.status_message('CombineAndMinify: "Combine: FileList" Project Path Setting not Set')
         elif inPath is None:
-            print 'CombineAndMinify: "Combine: InPath" Project Path Setting not Set'
+            print('CombineAndMinify: "Combine: InPath" Project Path Setting not Set')
             s.status_message('CombineAndMinify: "Combine: InPath" Project Path Setting not Set')
         else:
             # Check to see that user set up optional project settings
             if outPath is None:
                 outPath = inPath
                 # Notify User
-                print 'CombineAndMinify: "Combine: OutPath" Project Path Setting not Set, using same as InPath'
+                print('CombineAndMinify: "Combine: OutPath" Project Path Setting not Set, using same as InPath')
                 s.status_message('CombineAndMinify: "Combine: OutPath" Project Path Setting not Set, using same as InPath')
             if jsMaster is None:
                 jsMaster = 'master.js'
                 # Notify User
-                print 'CombineAndMinify: "Combine: MasterName" Project Path Setting not Set, using "master.js"'
+                print('CombineAndMinify: "Combine: MasterName" Project Path Setting not Set, using "master.js"')
                 s.status_message('CombineAndMinify: "Combine: MasterName" Project Path Setting not Set, using "master.js"')
             if jsMinify is None:
                 jsMinify = 'master.min.js'
                 # Notify User
-                print 'CombineAndMinify: "Combine: MinifyName" Project Path Setting not Set, using "master.min.js"'
+                print('CombineAndMinify: "Combine: MinifyName" Project Path Setting not Set, using "master.min.js"')
                 s.status_message('CombineAndMinify: "Combine: MinifyName" Project Path Setting not Set, using "master.min.js"')
             process(fileList, inPath, outPath, jsMaster, jsMinify)
