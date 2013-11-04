@@ -2,6 +2,10 @@
 
 Combine a list of JavaScript files Into a single master and minified version
 
+## Sublime Text 3 Support
+
+10/2013 - [This branch](https://github.com/ccurtis/Sublime-CombineAndMinify/tree/Sublime-Text-3) works with Sublime Text 3
+
 ## Created
 
 8/2013
